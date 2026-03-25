@@ -33,12 +33,14 @@ CREATE TABLE pers (
     p_tal VARCHAR2(11) UNIQUE,
     fornavn VARCHAR2(40),
     eftirnavn VARCHAR2(40),
-    føðingardag DATE,
+    føðingardag VARCHAR2(8) DEFAULT '01010000' NOT NULL,
     kyn varchar2(1) DEFAULT 'm' NOT NULL,
     CONSTRAINT chk_kyn CHECK (kyn IN ('m', 'k')),
     bústað_id NUMBER,
     CONSTRAINT fk_bústað_id
-        FOREIGN KEY (bústað_id) REFERENCES bústað(bústað_id)
+        FOREIGN KEY (bústað_id) REFERENCES bústað(bústað_id),
+    CONSTRAINT chk_fodingardag
+        CHECK (REGEXP_LIKE(føðingardag, '^[0-9]{8}$'))
 );
 CREATE TABLE kundi (
     kunda_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -130,7 +132,7 @@ CREATE TABLE børn (
 );
 
 CREATE TABLE kladda (
-    kladdu_id NUMBER PRIMARY KEY,
+    kladdu_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     flyting NUMBER(12,2) NOT NULL,
     frá_id VARCHAR2(11),
     til_id VARCHAR2(11),
@@ -148,8 +150,7 @@ CREATE TABLE kladda (
     CONSTRAINT fk_kladda_til
         FOREIGN KEY (til_id) REFERENCES konto(konto_id),
 
-    CONSTRAINT fk_kladda_bokad_av
-        FOREIGN KEY (bokad_av_starv_id) REFERENCES starvsfolk(starv_id),
+    
 
     CONSTRAINT chk_kladda_flyting
         CHECK (flyting > 0),
@@ -186,3 +187,4 @@ CREATE TABLE loggur (
     CONSTRAINT fk_log_mottakari
         FOREIGN KEY (móttakari_id) REFERENCES konto(konto_id)
 );
+

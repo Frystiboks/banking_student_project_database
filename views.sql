@@ -21,8 +21,10 @@ JOIN kundi ku
 JOIN konto k
     ON k.eigari_p_id = ku.kunda_id
 WHERE barn.føðingardag IS NOT NULL
-  AND ADD_MONTHS(barn.føðingardag, 12 * 18) > TRUNC(SYSDATE);
+  AND ADD_MONTHS(TO_DATE(barn.føðingardag, 'DDMMYYYY'), 12 * 18) > TRUNC(SYSDATE);
 /
+
+
 CREATE OR REPLACE VIEW v_hjunafelaga_kontur AS
 SELECT
     rel.brukari_p_id,
@@ -72,4 +74,15 @@ LEFT JOIN kundi mku
     ON mku.kunda_id = mk.eigari_p_id
 LEFT JOIN pers mp
     ON mp.p_id = mku.p_id;
+/
+CREATE OR REPLACE VIEW v_kundi_samla_saldo AS
+SELECT
+    ku.kunda_id,
+    ku.p_id,
+    COUNT(k.konto_id) AS tal_av_kontum,
+    SUM(k.saldo) AS samlað_saldo
+FROM kundi ku
+LEFT JOIN konto k
+    ON k.eigari_p_id = ku.kunda_id
+GROUP BY ku.kunda_id, ku.p_id;
 /

@@ -42,8 +42,6 @@ BEGIN
 END nýggj_hjún;
 /
 
-
-
 CREATE OR REPLACE PROCEDURE end_hjún (
     p_p1_p_id IN NUMBER,
     p_p2_p_id IN NUMBER
@@ -77,9 +75,6 @@ BEGIN
      WHERE skild_dato IS NULL
        AND p1_id = v_p1_id
        AND p2_id = v_p2_id;
-
-
--- Um einki var updatera, merkir at tey ikki eru til
 
     IF SQL%ROWCOUNT = 0 THEN
         RAISE_APPLICATION_ERROR(-20005, 'Einki virkið hjúnaband funnið hjá hesum báðum.');

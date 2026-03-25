@@ -26,7 +26,8 @@ BEGIN
     WHERE p_id = p_p_id;
 
     INSERT INTO starvsfolk (starv_navn, lon, p_id)
-    VALUES (p_starv_navn, p_lon, p_p_id,);
+    VALUES (p_starv_navn, p_lon, p_p_id);
+
 
 EXCEPTION
     WHEN NO_DATA_FOUND THEN

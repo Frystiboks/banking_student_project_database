@@ -1,4 +1,3 @@
-
 CREATE OR REPLACE PROCEDURE nyggj_kladda (
     p_brukari_p_id   IN NUMBER,
     p_flyting        IN NUMBER,
@@ -18,7 +17,7 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20002, 'ERROR: Flyting má vera yvir 0.');
     END IF;
 
-    IF p_slag NOT IN ('INNSETING', 'UTTOKA', 'FLYTING') THEN
+    IF p_slag IS NULL OR p_slag NOT IN ('INNSETING', 'UTTOKA', 'FLYTING') THEN
         RAISE_APPLICATION_ERROR(-20003, 'ERROR: Ógildigt slag.');
     END IF;
 
@@ -77,7 +76,6 @@ BEGIN
     END IF;
 
     INSERT INTO kladda (
-        kladdu_id,
         flyting,
         frá_id,
         til_id,
@@ -88,7 +86,6 @@ BEGIN
         dato
     )
     VALUES (
-        kladdu_seq.NEXTVAL,
         p_flyting,
         p_fra_id,
         p_til_id,
@@ -107,8 +104,7 @@ EXCEPTION
 END nyggj_kladda;
 /
 
-
-create or replace PROCEDURE boka_kladdu (
+CREATE OR REPLACE PROCEDURE boka_kladdu (
     p_brukari_starv_id IN NUMBER,
     p_kladdu_id        IN NUMBER
 ) IS
@@ -261,12 +257,9 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE;
 END boka_kladdu;
-
 /
 
-
-
-create or replace PROCEDURE avvisa_kladdu (
+CREATE OR REPLACE PROCEDURE avvisa_kladdu (
     p_brukari_starv_id IN NUMBER,
     p_kladdu_id        IN NUMBER
 ) IS
@@ -300,4 +293,4 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE;
 END avvisa_kladdu;
-
+/

@@ -38,17 +38,20 @@ begin
     if :new.log_dato is null then
         :new.log_dato := sysdate;
     end if;
-    
+    new_saldo := 0;
     if :new.saldo_broyting != 0  then
-    update konto
-    set saldo = saldo + :new.saldo_broyting
-    where konto_id = :new.konto_id;
-    
+        update konto
+        set saldo = saldo + :new.saldo_broyting
+        where konto_id = :new.konto_id;
+        
+        select saldo into new_saldo from konto where konto_id = :new.konto_id;
+        :new.leypandi_saldo := new_saldo ;
+    else
+        :new.leypandi_saldo := :old.leypandi_saldo;
     end if;
-    
-    select saldo into new_saldo from konto where konto_id = :new.konto_id;
-    :new.leypandi_saldo := new_saldo ;
 
+
+    
 end;
 /
 

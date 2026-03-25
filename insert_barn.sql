@@ -44,10 +44,8 @@ BEGIN
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         RAISE_APPLICATION_ERROR(-20004, 'Ein av persónunum er ikki til í pers.');
-
     WHEN DUP_VAL_ON_INDEX THEN
         RAISE_APPLICATION_ERROR(-20005, 'Barnið hevur longu eina familju-røð.');
-
     WHEN OTHERS THEN
         RAISE;
 END barn;
