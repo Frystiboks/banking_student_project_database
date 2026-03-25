@@ -19,7 +19,7 @@ begin
         kyn_tal := 0;
     end if;
     
-    if mod(to_number(SUBSTR(føðingardag, 5)),2) = 0 then
+    if mod(to_number(SUBSTR(føðingardag, 6, 1)),2) = 0 then
         j := 5;
         else
         j := 0;
