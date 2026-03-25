@@ -79,7 +79,7 @@ is
     rentu_saldo number;
     bankaboks varchar2(11);
 BEGIN
-    bankaboks := '6969000';
+    bankaboks := '69690000016';
     FOR rec IN (
         SELECT konto_id, kontotypa, saldo
         FROM konto

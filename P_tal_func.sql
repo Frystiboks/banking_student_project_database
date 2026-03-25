@@ -1,4 +1,4 @@
-create or replace function ptal_gen(føðingardag IN varchar2)
+create or replace function ptal_gen(føðingardag IN varchar2, kyn IN varchar2)
 return varchar2
 is
     summ number;
@@ -8,11 +8,16 @@ is
     j_end number;
     p_count number;
     new_ptal varchar(9);
+    kyn_tal number;
 begin
     if length(føðingardag) != 8 then
         return '';
     end if;
-    
+    if kyn = 'm' then
+        kyn_tal := 1;
+    elsif kyn = 'k' then
+        kyn_tal := 0;
+    end if;
     
     if mod(to_number(SUBSTR(føðingardag, 5)),2) = 0 then
         j := 5;
@@ -40,7 +45,7 @@ begin
                 1*0;
                 
                 rest :=11- mod(summ, 11);
-                if rest < 10 then
+                if rest < 10 and mod(rest, 2) = kyn_tal  then
                     new_ptal := SUBSTR(føðingardag, 1, 4) || SUBSTR(føðingardag, 7, 8) || to_char(j) || to_char(i)|| to_char(rest);
                     --return rest;
                     SELECT COUNT(*)

@@ -34,10 +34,12 @@ CREATE TABLE bústað (
 
 CREATE TABLE pers (
     p_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    p_tal VARCHAR(11) UNIQUE,
-    fornavn VARCHAR(40),
-    eftirnavn VARCHAR(40),
-    tlf VARCHAR(8),
+    p_tal VARCHAR2(11) UNIQUE,
+    fornavn VARCHAR2(40),
+    eftirnavn VARCHAR2(40),
+    føðingardag varchar2(8),
+    kyn varchar2(1) DEFAULT 'm' NOT NULL,
+    CONSTRAINT chk_kyn CHECK (kyn IN ('m', 'k')),
     bústað_id NUMBER,
     CONSTRAINT fk_bústað_id
         FOREIGN KEY (bústað_id) REFERENCES bústað(bústað_id)

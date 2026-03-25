@@ -1,3 +1,10 @@
+
+create sequence kontonum_seq_lán;
+create sequence kontonum_seq_uppsparing;
+create sequence kontonum_seq_nýtsla;
+create sequence kontonum_seq_default;
+create sequence kontonum_seq_bank;
+
 create or replace function kontonummar_gen(kontotypa IN varchar2)
 return varchar2
 is
@@ -8,21 +15,22 @@ is
     x number;
     abc varchar2(3);
     rest number;
-    j_end number;
-    p_count number;
     new_kontonummar varchar(11);
     max_kontonummar varchar(11);
 begin
 
-if kontotypa = 'Lán' then
+if kontotypa = '100' then
     abc := '100';
     select kontonum_seq_lán.nextval into x from dual;
-elsif kontotypa = 'Nýtslu' then
+elsif kontotypa = '200' then
     abc := '200';
     select kontonum_seq_nýtsla.nextval into x from dual;
-elsif kontotypa = 'Uppsparing' then
+elsif kontotypa = '300' then
     abc := '300';
     select kontonum_seq_uppsparing.nextval into x from dual;
+elsif kontotypa = '000' then
+    abc := '000';
+    select kontonum_seq_bank.nextval into x from dual;
 else
     abc := '400';
     select kontonum_seq_default.nextval into x from dual;
@@ -58,17 +66,15 @@ loop
                     new_kontonummar := '6969' || abc || to_char(k) || to_char(j) || to_char(i)|| to_char(rest);
                 end if;
                 
-                if kontotypa = 'Lán' then
-                    abc := '100';
+                if kontotypa = '100' then
                     select kontonum_seq_lán.nextval into x from dual;
-                elsif kontotypa = 'Nýtslu' then
-                    abc := '200';
+                elsif kontotypa = '200' then
                     select kontonum_seq_nýtsla.nextval into x from dual;
-                elsif kontotypa = 'Uppsparing' then
-                    abc := '300';
+                elsif kontotypa = '300' then
                     select kontonum_seq_uppsparing.nextval into x from dual;
+                elsif kontotypa = '000' then
+                    select kontonum_seq_bank.nextval into x from dual;
                 else
-                    abc := '400';
                     select kontonum_seq_default.nextval into x from dual;
                 end if;
                 i := mod(x,10);
