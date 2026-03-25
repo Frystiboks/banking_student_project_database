@@ -70,15 +70,37 @@ VALUES ('69693000002', 0, '400', 1);
 INSERT INTO konto (konto_id, saldo, kontotypa, eigari_p_id)
 VALUES ('69690000016', 0, '000', 5);
 
-nyggj_kladda (5, 1000000000, 
-    p_brukari_p_id   IN NUMBER,
-    p_flyting        IN NUMBER,
-    p_fra_id         IN VARCHAR2,
-    p_til_id         IN VARCHAR2,
-    p_egintekst      IN VARCHAR2,
-    p_mottokutekst   IN VARCHAR2,
-    p_slag           IN VARCHAR2
-)
+update konto
+set saldo = 1000000000
+where konto_id = 69690000016;
+
+insert into loggur (konto_id,
+                    saldo_broyting,
+                    móttakari_id,
+                    tekst
+        ) 
+        values (69694000878,
+                -100000,   
+                null,                 
+                'innseting'      
+        );
+
+insert into loggur (konto_id,
+                    saldo_broyting,
+                    móttakari_id,
+                    tekst
+        ) 
+        values (69694000878,
+                100000,   
+                null,                 
+                'innseting'      
+        );
+
+
+select rentu_rokning('100', 69694000878, sysdate, add_months(sysdate, 1)) from dual;
+
+EXECUTE rentu_rokning_allar_konti(sysdate, add_months(sysdate, 1));
+
 
 select kontoslag.slag_navn, konto.konto_id
 from konto, kontoslag 

@@ -14,11 +14,15 @@ FROM (
     FROM børn
     WHERE p2_id IS NOT NULL
 ) rel
+JOIN pers barn
+    ON barn.p_id = rel.barn_id
+JOIN kundi ku
+    ON ku.p_id = rel.barn_id
 JOIN konto k
-    ON k.eigari_p_id = rel.barn_id;
-
-
-
+    ON k.eigari_p_id = ku.kunda_id
+WHERE barn.føðingardag IS NOT NULL
+  AND ADD_MONTHS(barn.føðingardag, 12 * 18) > TRUNC(SYSDATE);
+/
 CREATE OR REPLACE VIEW v_hjunafelaga_kontur AS
 SELECT
     rel.brukari_p_id,
@@ -36,9 +40,11 @@ FROM (
     FROM hjúnaband
     WHERE skild_dato IS NULL
 ) rel
+JOIN kundi ku
+    ON ku.p_id = rel.maki_p_id
 JOIN konto k
-    ON k.eigari_p_id = rel.maki_p_id;
-    
+    ON k.eigari_p_id = ku.kunda_id;
+/
 CREATE OR REPLACE VIEW v_kontoavrit AS
 SELECT
     l.log_id,
@@ -56,10 +62,14 @@ SELECT
 FROM loggur l
 JOIN konto k
     ON k.konto_id = l.konto_id
+JOIN kundi ku
+    ON ku.kunda_id = k.eigari_p_id
 JOIN pers p
-    ON p.p_id = k.eigari_p_id
+    ON p.p_id = ku.p_id
 LEFT JOIN konto mk
     ON mk.konto_id = l.móttakari_id
+LEFT JOIN kundi mku
+    ON mku.kunda_id = mk.eigari_p_id
 LEFT JOIN pers mp
-    ON mp.p_id = mk.eigari_p_id;
+    ON mp.p_id = mku.p_id;
 /

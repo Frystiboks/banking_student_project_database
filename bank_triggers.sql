@@ -42,12 +42,12 @@ begin
     if :new.saldo_broyting != 0  then
     update konto
     set saldo = saldo + :new.saldo_broyting
-    where konto_id = :new.konto_id
-    returning saldo into new_saldo;
+    where konto_id = :new.konto_id;
     
-    :new.leypandi_saldo := new_saldo;
     end if;
     
+    select saldo into new_saldo from konto where konto_id = :new.konto_id;
+    :new.leypandi_saldo := new_saldo ;
 
 end;
 /

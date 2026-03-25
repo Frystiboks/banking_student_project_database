@@ -9,12 +9,8 @@ DROP TABLE kontoslag;
 DROP TABLE pers;
 DROP TABLE bústað;
 DROP TABLE postkota;
-DROP TABLE bankar;
 
-CREATE TABLE bankar (
-    bank_id NUMBER PRIMARY KEY,
-    banka_addressa_id VARCHAR(40)
-);
+
 
 CREATE TABLE postkota (
     postkota NUMBER PRIMARY KEY,
@@ -37,7 +33,7 @@ CREATE TABLE pers (
     p_tal VARCHAR2(11) UNIQUE,
     fornavn VARCHAR2(40),
     eftirnavn VARCHAR2(40),
-    føðingardag varchar2(8),
+    føðingardag DATE,
     kyn varchar2(1) DEFAULT 'm' NOT NULL,
     CONSTRAINT chk_kyn CHECK (kyn IN ('m', 'k')),
     bústað_id NUMBER,
@@ -83,7 +79,7 @@ CREATE TABLE hjúnaband (
     CONSTRAINT fk_hjúnaband_p2
         FOREIGN KEY (p2_id) REFERENCES pers(p_id),
     CONSTRAINT chk_hjúnaband_ikki_sami
-        CHECK (p1_id <> p2_id),
+        CHECK (p1_id != p2_id),
     CONSTRAINT chk_hjúnaband_rað
         CHECK (p1_id < p2_id),
     CONSTRAINT chk_hjúnaband_dato
