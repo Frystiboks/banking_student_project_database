@@ -30,7 +30,7 @@ CREATE TABLE bústað (
 
 CREATE TABLE pers (
     p_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    p_tal VARCHAR2(11) UNIQUE,
+    p_tal VARCHAR2(11) UNIQUE NOT NULL,
     fornavn VARCHAR2(40),
     eftirnavn VARCHAR2(40),
     føðingardag VARCHAR2(8) DEFAULT '01010000' NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE pers (
 );
 CREATE TABLE kundi (
     kunda_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    stovningar_dato date,
+    stovningar_dato date DEFAULT sysdate not null,
     slett_dato date,
     loynuorð varchar2(40),
     p_id number,
@@ -60,7 +60,7 @@ CREATE TABLE kontoslag (
 );
 
 CREATE TABLE konto (
-    konto_id VARCHAR2(11) PRIMARY KEY,
+    konto_id VARCHAR2(11) DEFAULT '0' PRIMARY KEY,
     saldo NUMBER(12,2),
     kontotypa varchar2(3),
     eigari_p_id NUMBER,
@@ -95,20 +95,16 @@ CREATE UNIQUE INDEX hjúnaband_aktivt_par
     );
 
 CREATE TABLE starvsfolk (
-    starv_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    p_id number PRIMARY KEY,
     starv_navn VARCHAR2(20) NOT NULL,
     lon NUMBER,
-    p_id NUMBER NOT NULL,
     atgongd_typa VARCHAR2(20) DEFAULT 'ONEYDUGT' NOT NULL,
-
-    CONSTRAINT uq_starvsfolk_p_id
-        UNIQUE (p_id),
 
     CONSTRAINT fk_starvsfolk_p_id
         FOREIGN KEY (p_id) REFERENCES pers(p_id),
 
     CONSTRAINT chk_atgongd_typa
-        CHECK (atgongd_typa IN ('ONEYDUGT', 'STARVSFOLK', 'ADMIN'))
+            CHECK (atgongd_typa IN ('ONEYDUGT', 'STARVSFOLK', 'ADMIN'))
 );
 CREATE TABLE børn (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -138,7 +134,7 @@ CREATE TABLE kladda (
     til_id VARCHAR2(11),
     egintekst VARCHAR2(160),
     mottokutekst VARCHAR2(160),
-    bokad_av_starv_id NUMBER,
+    bokad_av_p_id NUMBER,
     bokad_dato DATE,
     slag VARCHAR2(20) NOT NULL,
     status VARCHAR2(20) DEFAULT 'OAVGJORD' NOT NULL,

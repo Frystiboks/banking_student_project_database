@@ -42,8 +42,8 @@ END;
 -- Rolle broytari er fyri at broyta rolluna hjá starvfólkum, har ein admin kann broyta løn,
 -- Starv navn, access typa og meira
 CREATE OR REPLACE PROCEDURE rolle_broytari ( 
-    p_brukari_starv_id IN NUMBER,
-    p_starv_id         IN NUMBER,
+    p_brukari_p_id IN NUMBER,
+    p_p_id         IN NUMBER,
     p_starv_navn       IN VARCHAR2,
     p_lon              IN NUMBER,
     p_atgongd_typa     IN VARCHAR2
@@ -54,16 +54,16 @@ BEGIN
     SELECT atgongd_typa
     INTO v_brukari_atgongd
     FROM starvsfolk
-    WHERE starv_id = p_brukari_starv_id;
+    WHERE p_id = p_brukari_p_id;
 
     IF v_brukari_atgongd <> 'ADMIN' THEN
         RAISE_APPLICATION_ERROR(-20002, 'ERROR: Bert administrator kann broyta starvsfólk.');
     END IF;
 
-    SELECT starv_id
+    SELECT p_id
     INTO v_dummy
     FROM starvsfolk
-    WHERE starv_id = p_starv_id;
+    WHERE p_id = p_p_id;
 
     IF p_lon IS NOT NULL THEN
         IF p_lon <= 0 THEN
@@ -80,19 +80,19 @@ BEGIN
     IF p_starv_navn IS NOT NULL THEN
         UPDATE starvsfolk
         SET starv_navn = p_starv_navn
-        WHERE starv_id = p_starv_id;
+        WHERE p_id = p_p_id;
     END IF;
 
     IF p_lon IS NOT NULL THEN
         UPDATE starvsfolk
         SET lon = p_lon
-        WHERE starv_id = p_starv_id;
+        WHERE p_id = p_p_id;
     END IF;
 
     IF p_atgongd_typa IS NOT NULL THEN
         UPDATE starvsfolk
         SET atgongd_typa = p_atgongd_typa
-        WHERE starv_id = p_starv_id;
+        WHERE p_id = p_p_id;
     END IF;
 
 EXCEPTION

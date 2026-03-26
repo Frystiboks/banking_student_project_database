@@ -18,7 +18,7 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20003, 'ERROR: Ógildugur føðingardagur.');
     END IF;
 
-    INSERT INTO pers (fornavn, eftirnavn, føðingardag, kyn, bústað_id)
+    INSERT INTO pers(fornavn, eftirnavn, føðingardag, kyn, bústað_id)
     VALUES (p_fornavn, p_eftirnavn, p_føðingardag, p_kyn, p_bústað_id);
 
 EXCEPTION

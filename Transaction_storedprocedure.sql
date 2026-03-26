@@ -105,7 +105,7 @@ END nyggj_kladda;
 /
 
 CREATE OR REPLACE PROCEDURE boka_kladdu (
-    p_brukari_starv_id IN NUMBER,
+    p_brukari_p_id IN NUMBER,
     p_kladdu_id        IN NUMBER
 ) IS
     v_atgongd        starvsfolk.atgongd_typa%TYPE;
@@ -122,7 +122,7 @@ BEGIN
     SELECT atgongd_typa
     INTO v_atgongd
     FROM starvsfolk
-    WHERE starv_id = p_brukari_starv_id;
+    WHERE p_id = p_brukari_p_id;
 
     IF v_atgongd != 'STARVSFOLK' AND v_atgongd != 'ADMIN' THEN
         RAISE_APPLICATION_ERROR(-20001, 'ERROR: Bert starvsfólk ella admin kunnu bóka.');
@@ -245,7 +245,7 @@ BEGIN
 
     UPDATE kladda
     SET status = 'BOKAD',
-        bokad_av_starv_id = p_brukari_starv_id,
+        bokad_av_p_id = p_brukari_p_id,
         bokad_dato = SYSDATE
     WHERE kladdu_id = p_kladdu_id;
 
@@ -260,7 +260,7 @@ END boka_kladdu;
 /
 
 CREATE OR REPLACE PROCEDURE avvisa_kladdu (
-    p_brukari_starv_id IN NUMBER,
+    p_brukari_p_id IN NUMBER,
     p_kladdu_id        IN NUMBER
 ) IS
     v_atgongd starvsfolk.atgongd_typa%TYPE;
@@ -268,7 +268,7 @@ BEGIN
     SELECT atgongd_typa
     INTO v_atgongd
     FROM starvsfolk
-    WHERE starv_id = p_brukari_starv_id;
+    WHERE p_id = p_brukari_p_id;
 
     IF v_atgongd != 'STARVSFOLK' AND v_atgongd != 'ADMIN' THEN
         RAISE_APPLICATION_ERROR(-20001, 'ERROR: Bert starvsfólk ella admin kunnu avvísa.');
@@ -276,7 +276,7 @@ BEGIN
 
     UPDATE kladda
     SET status = 'AVVIST',
-        bokad_av_starv_id = p_brukari_starv_id,
+        bokad_av_p_id = p_brukari_p_id,
         bokad_dato = SYSDATE
     WHERE kladdu_id = p_kladdu_id
       AND status = 'OAVGJORD';
