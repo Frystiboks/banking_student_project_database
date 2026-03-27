@@ -64,12 +64,12 @@ end;
 
 -- máðanarlig renturokning
 begin
-        -- drop the job if it already exists
+        -- sletta job um tað eksisterar
     begin
         dbms_scheduler.drop_job('mánaðarlig_renturokning', true); 
     exception
         when others then
-            if sqlcode != -27475 then -- job does not exist
+            if sqlcode != -27475 then 
                 raise;
             end if;
     end;

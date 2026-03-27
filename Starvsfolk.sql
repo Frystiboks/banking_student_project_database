@@ -1,32 +1,32 @@
 CREATE OR REPLACE PROCEDURE new_starv (
-    p_brukari_p_id   IN NUMBER, -- Er admin sum loggar inn
-    p_p_id         IN NUMBER,   -- er nýggji starvsfólk
-    p_starv_navn   IN VARCHAR2,
-    p_lon          IN NUMBER
+    brukari_p_id   IN NUMBER, -- Er admin sum loggar inn
+    p_id         IN NUMBER,   -- er nýggji starvsfólk
+    starv_navn   IN VARCHAR2,
+    lon          IN NUMBER
 ) IS
-    v_brukari_atgongd  starvsfolk.atgongd_typa%TYPE;
-    v_dummy          NUMBER;
+    brukari_atgongd  starvsfolk.atgongd_typa%TYPE;
+    dummy          NUMBER;
 BEGIN
-    IF p_lon <= 0 THEN
+    IF lon <= 0 THEN
         RAISE_APPLICATION_ERROR(-20001, 'ERROR: Løn má vera yvir 0');
     END IF;
 
     SELECT atgongd_typa
-    INTO v_brukari_atgongd
+    INTO brukari_atgongd
     FROM starvsfolk
-    WHERE p_id = p_brukari_p_id;
+    WHERE p_id = brukari_p_id;
 
-    IF v_brukari_atgongd <> 'ADMIN' THEN
+    IF brukari_atgongd <> 'ADMIN' THEN
         RAISE_APPLICATION_ERROR(-20002, 'ERROR: Bert administrator kann stovna starvsfólk.');
     END IF;
 
     SELECT p_id
-    INTO v_dummy
+    INTO dummy
     FROM pers
-    WHERE p_id = p_p_id;
+    WHERE p_id = p_id;
 
     INSERT INTO starvsfolk (starv_navn, lon, p_id)
-    VALUES (p_starv_navn, p_lon, p_p_id);
+    VALUES (starv_navn, lon, p_id);
 
 
 EXCEPTION
@@ -42,57 +42,57 @@ END;
 -- Rolle broytari er fyri at broyta rolluna hjá starvfólkum, har ein admin kann broyta løn,
 -- Starv navn, access typa og meira
 CREATE OR REPLACE PROCEDURE rolle_broytari ( 
-    p_brukari_p_id IN NUMBER,
-    p_p_id         IN NUMBER,
-    p_starv_navn       IN VARCHAR2,
-    p_lon              IN NUMBER,
-    p_atgongd_typa     IN VARCHAR2
+    brukari_p_id IN NUMBER,
+    p_id         IN NUMBER,
+    starv_navn       IN VARCHAR2,
+    lon              IN NUMBER,
+    atgongd_typa     IN VARCHAR2
 ) IS
-    v_brukari_atgongd  starvsfolk.atgongd_typa%TYPE;
-    v_dummy            NUMBER;
+    brukari_atgongd  starvsfolk.atgongd_typa%TYPE;
+    dummy            NUMBER;
 BEGIN
     SELECT atgongd_typa
-    INTO v_brukari_atgongd
+    INTO brukari_atgongd
     FROM starvsfolk
-    WHERE p_id = p_brukari_p_id;
+    WHERE p_id = brukari_p_id;
 
-    IF v_brukari_atgongd <> 'ADMIN' THEN
+    IF brukari_atgongd <> 'ADMIN' THEN
         RAISE_APPLICATION_ERROR(-20002, 'ERROR: Bert administrator kann broyta starvsfólk.');
     END IF;
 
     SELECT p_id
-    INTO v_dummy
+    INTO dummy
     FROM starvsfolk
-    WHERE p_id = p_p_id;
+    WHERE p_id = p_id;
 
-    IF p_lon IS NOT NULL THEN
-        IF p_lon <= 0 THEN
+    IF lon IS NOT NULL THEN
+        IF lon <= 0 THEN
             RAISE_APPLICATION_ERROR(-20001, 'ERROR: Løn má vera yvir 0.');
         END IF;
     END IF;
 
-    IF p_atgongd_typa IS NOT NULL THEN
-        IF p_atgongd_typa NOT IN ('ONEYDUGT', 'STARVSFOLK', 'ADMIN') THEN
+    IF atgongd_typa IS NOT NULL THEN
+        IF atgongd_typa NOT IN ('ONEYDUGT', 'STARVSFOLK', 'ADMIN') THEN
             RAISE_APPLICATION_ERROR(-20005, 'ERROR: Ógildig atgongd_typa.');
         END IF;
     END IF;
 
-    IF p_starv_navn IS NOT NULL THEN
+    IF starv_navn IS NOT NULL THEN
         UPDATE starvsfolk
-        SET starv_navn = p_starv_navn
-        WHERE p_id = p_p_id;
+        SET starv_navn = starv_navn
+        WHERE p_id = p_id;
     END IF;
 
-    IF p_lon IS NOT NULL THEN
+    IF lon IS NOT NULL THEN
         UPDATE starvsfolk
-        SET lon = p_lon
-        WHERE p_id = p_p_id;
+        SET lon = lon
+        WHERE p_id = p_id;
     END IF;
 
-    IF p_atgongd_typa IS NOT NULL THEN
+    IF atgongd_typa IS NOT NULL THEN
         UPDATE starvsfolk
-        SET atgongd_typa = p_atgongd_typa
-        WHERE p_id = p_p_id;
+        SET atgongd_typa = atgongd_typa
+        WHERE p_id = p_id;
     END IF;
 
 EXCEPTION

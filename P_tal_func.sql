@@ -1,64 +1,64 @@
-create or replace function ptal_gen(føðingardag IN varchar2, kyn IN varchar2)
-return varchar2
-is
-    summ number;
-    i number;
-    j number;
-    rest number;
-    j_end number;
-    p_count number;
-    new_ptal varchar(9);
-    kyn_tal number;
-begin
-    if length(føðingardag) != 8 then
-        return '';
-    end if;
-    if kyn = 'm' then
+CREATE OR REPLACE FUNCTION ptal_gen(føðingardag IN VARCHAR2, kyn IN VARCHAR2)
+RETURN VARCHAR2
+IS
+    summ NUMBER;
+    I NUMBER;
+    J NUMBER;
+    rest NUMBER;
+    j_end NUMBER;
+    p_count NUMBER;
+    new_ptal VARCHAR(9);
+    kyn_tal NUMBER;
+BEGIN
+    IF LENGTH(føðingardag) != 8 THEN
+        RETURN '';
+    END IF;
+    IF kyn = 'm' THEN
         kyn_tal := 1;
-    elsif kyn = 'k' then
+    ELSIF kyn = 'k' THEN
         kyn_tal := 0;
-    end if;
+    END IF;
     
-    if mod(to_number(SUBSTR(føðingardag, 6, 1)),2) = 0 then
-        j := 5;
-        else
-        j := 0;
-    end if;
-    j_end := j +4;
-    i := 0;
+    IF MOD(TO_NUMBER(substr(føðingardag, 6, 1)),2) = 0 THEN
+        J := 5;
+        ELSE
+        J := 0;
+    END IF;
+    j_end := J +4;
+    I := 0;
     
-        loop
-            loop
+        LOOP
+            LOOP
             
                 new_ptal := NULL;
                 p_count := NULL;
                 
                 summ := 
-                3*to_number(SUBSTR(føðingardag, 1, 1)) +
-                2*to_number(SUBSTR(føðingardag, 2, 1)) +
-                7*to_number(SUBSTR(føðingardag, 3, 1)) +
-                6*to_number(SUBSTR(føðingardag, 4, 1)) +
-                5*to_number(SUBSTR(føðingardag, 7, 1)) +
-                4*to_number(SUBSTR(føðingardag, 8, 1)) +
-                3*j +
-                2*i +
+                3*TO_NUMBER(substr(føðingardag, 1, 1)) +
+                2*TO_NUMBER(substr(føðingardag, 2, 1)) +
+                7*TO_NUMBER(substr(føðingardag, 3, 1)) +
+                6*TO_NUMBER(substr(føðingardag, 4, 1)) +
+                5*TO_NUMBER(substr(føðingardag, 7, 1)) +
+                4*TO_NUMBER(substr(føðingardag, 8, 1)) +
+                3*J +
+                2*I +
                 1*0;
                 
-                rest :=11- mod(summ, 11);
-                if rest < 10 and mod(rest, 2) = kyn_tal  then
-                    new_ptal := SUBSTR(føðingardag, 1, 4) || SUBSTR(føðingardag, 7, 8) || to_char(j) || to_char(i)|| to_char(rest);
+                rest :=11- MOD(summ, 11);
+                IF rest < 10 AND MOD(rest, 2) = kyn_tal  THEN
+                    new_ptal := substr(føðingardag, 1, 4) || substr(føðingardag, 7, 8) || to_char(J) || to_char(I)|| to_char(rest);
                     --return rest;
                     SELECT COUNT(*)
                     INTO p_count
                     FROM pers
                     WHERE p_tal = new_ptal;
-                end if;
-                i := i+1;
-                exit when i > 9 or (p_count = 0 and new_ptal is not null);
-            end loop;
-            i := 0;
-            j := j+1;
-            exit when j > j_end or (p_count = 0 and new_ptal is not null);
-        end loop;
-    return new_ptal;
-end;
+                END IF;
+                I := I+1;
+                EXIT WHEN I > 9 OR (p_count = 0 AND new_ptal IS NOT NULL);
+            END LOOP;
+            I := 0;
+            J := J+1;
+            EXIT WHEN J > j_end OR (p_count = 0 AND new_ptal IS NOT NULL);
+        END LOOP;
+    RETURN new_ptal;
+END;

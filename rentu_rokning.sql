@@ -1,90 +1,90 @@
-create or replace function rentu_rokning(kontotypa IN varchar2, p_konto_id IN varchar2, dato_start IN date, dato_end IN date)
-return number
-is
-    saldo number(12,2);
-    last_dato date;
-    max_dato date;
-    dato_current date;
-    end_of_month date;
-    renta number;
-    samla_renta number;
-    debit_renta number;
-    credit_renta number;
-    max_trans_id number;
-begin
+CREATE OR REPLACE FUNCTION rentu_rokning(kontotypa IN VARCHAR2, p_konto_id IN VARCHAR2, dato_start IN DATE, dato_end IN DATE)
+RETURN NUMBER
+IS
+    saldo NUMBER(12,2);
+    last_dato DATE;
+    max_dato DATE;
+    dato_current DATE;
+    end_of_month DATE;
+    renta NUMBER;
+    samla_renta NUMBER;
+    debit_renta NUMBER;
+    credit_renta NUMBER;
+    max_trans_id NUMBER;
+BEGIN
 
-select credit_renta into credit_renta 
-from kontoslag
-where kontotypa = kontoslag.kontoslag_id;
+SELECT credit_renta INTO credit_renta 
+FROM kontoslag
+WHERE kontotypa = kontoslag.kontoslag_id;
 
-select debit_renta into debit_renta 
-from kontoslag
-where kontotypa = kontoslag.kontoslag_id;
+SELECT debit_renta INTO debit_renta 
+FROM kontoslag
+WHERE kontotypa = kontoslag.kontoslag_id;
 
      samla_renta := 0;
     
-    select max(log_dato) into max_dato
-    from loggur
-    where p_konto_id = loggur.konto_id and log_dato <= dato_start;
+    SELECT MAX(log_dato) INTO max_dato
+    FROM loggur
+    WHERE p_konto_id = loggur.konto_id AND log_dato <= dato_start;
 
 -- makes sure we get the latest transaction in the case where we have duplicate dates.
-    select max(log_id) into max_trans_id
-    from loggur
-    where p_konto_id = loggur.konto_id and log_dato = max_dato;
+    SELECT MAX(log_id) INTO max_trans_id
+    FROM loggur
+    WHERE p_konto_id = loggur.konto_id AND log_dato = max_dato;
 
 
 -- loys trupuleikan um eingin bóking er. kanska ger eina 0 bóking tá kontoin er stovna.
-    select leypandi_saldo into saldo
-    from loggur
-    where p_konto_id = loggur.konto_id and log_dato = max_dato and max_trans_id = loggur.log_id;
+    SELECT leypandi_saldo INTO saldo
+    FROM loggur
+    WHERE p_konto_id = loggur.konto_id AND log_dato = max_dato AND max_trans_id = loggur.log_id;
     
-    select last_day(dato_start) into end_of_month from dual;
+    SELECT last_day(dato_start) INTO end_of_month FROM dual;
     dato_current := dato_start;
 
-    loop
-    if saldo < 0 then
-        renta := credit_renta;
-    else
-        renta := debit_renta;
-    end if;
+    LOOP
+    IF saldo < 0 THEN
+        renta := credit_renta/364.25;
+    ELSE
+        renta := debit_renta/364.25;
+    END IF;
     samla_renta :=  samla_renta + saldo*renta;
        
    
-    select max(log_id) into max_trans_id
-    from loggur
-    where p_konto_id = loggur.konto_id and log_dato >= dato_current and log_dato < dato_current + 1;
+    SELECT MAX(log_id) INTO max_trans_id
+    FROM loggur
+    WHERE p_konto_id = loggur.konto_id AND log_dato >= dato_current AND log_dato < dato_current + 1;
 
-    if max_trans_id is not null then
-        select leypandi_saldo into saldo
-        from loggur
-        where p_konto_id = loggur.konto_id and max_trans_id = loggur.log_id;
-    end if;
+    IF max_trans_id IS NOT NULL THEN
+        SELECT leypandi_saldo INTO saldo
+        FROM loggur
+        WHERE p_konto_id = loggur.konto_id AND max_trans_id = loggur.log_id;
+    END IF;
 
 
-    if dato_current = end_of_month then
+    IF dato_current = end_of_month THEN
         saldo := saldo +  samla_renta;
          samla_renta := 0;
-        select last_day(ADD_MONTHS(dato_current, 1)) into end_of_month from dual;
-    end if;
+        SELECT last_day(add_months(dato_current, 1)) INTO end_of_month FROM dual;
+    END IF;
          
-    exit when dato_current >= dato_end;
-    select dato_current + 1 into dato_current from dual;
-    end loop;
-return saldo;
-end;
+    EXIT WHEN dato_current >= dato_end;
+    SELECT dato_current + 1 INTO dato_current FROM dual;
+    END LOOP;
+RETURN saldo;
+END;
 /
 
-create or replace procedure rentu_rokning_allar_konti(dato_start IN date, dato_end IN date)
-is
-    rentu_saldo number;
-    bankaboks varchar2(11);
+CREATE OR REPLACE PROCEDURE rentu_rokning_allar_konti(dato_start IN DATE, dato_end IN DATE)
+IS
+    rentu_saldo NUMBER;
+    bankaboks VARCHAR2(11);
 BEGIN
     bankaboks := '69690000016';
     FOR rec IN (
         SELECT konto_id, kontotypa, saldo
         FROM konto
     ) LOOP
-        select rentu_rokning(rec.kontotypa, rec.konto_id, dato_start, dato_end) into rentu_saldo from dual;
+        SELECT rentu_rokning(rec.kontotypa, rec.konto_id, dato_start, dato_end) INTO rentu_saldo FROM dual;
         
         INSERT INTO loggur (konto_id, saldo_broyting, móttakari_id)
         VALUES (rec.konto_id, rentu_saldo - rec.saldo, bankaboks);
